@@ -12,7 +12,7 @@ library(RColorBrewer)
 library(poLCA)   	 # latent class analysis for categorical variables
 library(cowplot)  	 # plot_grid
 library(stringr) 	 # str_to_title, convert first to capital
-library(prettyGraphs)#add.alpha
+library(prettyGraphs)# add.alpha
 library(ggrepel)     # 
 library(plotrix) 	 # image and contour,sizeplot
 library(ggtern)	 	 # kde2d.weighted 
@@ -27,15 +27,48 @@ res.root<-paste0(root,"/wave16_manipulated photo/analysis_022021/")
 # LOAD data
 load(file=paste0(root,"/wave16_manipulated photo/processed data/wave16_clean0.Rdata"),ver=TRUE) # dat
 
-# extract motivation variables
+## extract motivation variables
 mt.start<-which(names(dat)=="aesthetic")
 mt.end<-which(names(dat)=="carbon")
 
 motiv<-dat[,c(mt.start:mt.end)]
 motiv.id<-cbind(newid=dat$newid,motiv)
 
+## extract supplementary variables
+# upbringing variables
+g.start<-which(names(dat)=="growup.spruce")
+g.end<-which(names(dat)=="growup.none")
+
+gro<-dat[,c(g.start:g.end)] 
+# rename
+names(gro)<-as.factor(paste0("g.",substr(colnames(gro),8,12)))
+head(gro)
+
+# variables about profession 
+id<-which(names(dat)=="newid")
+
+wk.start<-which(names(dat)=="work.agriculture")
+wk.end<-which(names(dat)=="work.nonrelated")
+work<-dat[,c(wk.start:wk.end)]
+colnames(work)<-as.factor(paste0("w.",substr(colnames(work),6,14)))
+work<-work[,!names(work)%in%c("vetikke")]
+head(work)
+# combine data 
+mot.gw<-cbind(motiv.id,gro,work)
+
+# supplementary variables
+var<-c("newid","gender","region","birth.k6","norind","concernClimate",
+		"image.a","image.b","image.c",
+		"residenceType2","edu.k3","r14.income")
+supp<-dat[,var1]
+
+mgw.data<-merge(mot.gw,supp,by="newid",all.x=TRUE)
+
+summary(mgw.data) 
+
+
 #######################################
-######### 1. RUN MCA Analysis ############
+######### 1. RUN MCA Analysis #########
 #######################################
 
 n.q<-which(names(mgw.data[,-1])=="g.spruc") # position of the last supplementary variables used for MCA analysis
