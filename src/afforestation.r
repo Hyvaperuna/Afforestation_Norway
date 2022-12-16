@@ -25,7 +25,8 @@ root<- "C:/Users/a34543/Documents/Norce"
 res.root<-paste0(root,"/wave16_manipulated photo/analysis_022021/")
 
 # LOAD data
-load(file=paste0(root,"/wave16_manipulated photo/processed data/wave16_clean0.Rdata"),ver=TRUE) # dat
+load(file=paste0(root,"/wave16_data.Rdata"),ver=TRUE) # dat
+
 
 ## extract motivation variables
 mt.start<-which(names(dat)=="aesthetic")
