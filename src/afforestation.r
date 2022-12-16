@@ -220,7 +220,7 @@ with(comb,round(proportions(table(clust.kmeans)),2))
 
 
 ####################################
-##### 4. Latent Class Regression ######
+##### 4. Latent Class Regression ###
 ####################################
 
 # process the data
@@ -241,7 +241,7 @@ dat2<-merge(dat1,type,by.x="image.c",by.y="foto")
 head(dat2)
 
 ## LCR formula, 7 motivational variables and 1 photo choice variable as item response indicators
-# use the third photo choice from canvas.c
+# third photo choice (canvas.c) is the 8th item response indicators
 f1<-cbind(aesthetic,access,forestry,grazing,biodiversity, culture, carbon,Canvas.c)~  birth0.k7
 
 
@@ -253,12 +253,12 @@ start.hcpc<-start.lca(comb,n1)    # results of HCPC as starting values for LCR
 start.kmeans<-start.lca(comb,n2)  # results of k-means as starting values for LCR
 
 # note p.start perhaps can be used as initial value for glca
-replicates<-NULL
-n<-1  # change n=replicates; run multiple times to see the stability of the results
+results<-NULL
+n<-1  # change n can be a high number so that ; run multiple times to see the stability of the results
 for (i in 1:n){
-	#seed<-runif(1,max=10000)
-	seed<-7826.186
-	set.seed(seed)# seed=4577.397
+	#seed<-runif(1,max=10000) # use this to check stability of results
+	seed<-7826.186  		  # for reproduction of results in the paper 
+	set.seed(seed) 
 	nc<-3
 	lc0<-poLCA(f1,dat2,nclass=nc, maxiter=5000,probs.start=start.hcpc,nrep=20,graphs=F,na.rm=FALSE,verbose=TRUE,calc.se=TRUE)
 	p.start<-poLCA.reorder(lc0$probs.start,order(lc0$P,decreasing=TRUE)) # this order needs to be change manually
@@ -266,7 +266,7 @@ for (i in 1:n){
 	lc<-lc2 # 
 	clas<-c(apply(lc2$posterior,2,mean))
 	clas<-clas[order(clas)]
-	replicates<-rbind(replicates,data.frame(seeds=seed,cla1=clas[1],cla2=clas[2],cla3=clas[3])) # mean
+	results<-rbind(results,data.frame(seeds=seed,cla1=clas[1],cla2=clas[2],cla3=clas[3])) # mean
 	print(i)
 }
 
